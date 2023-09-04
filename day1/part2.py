@@ -1,6 +1,6 @@
 import sys
 sys.path.append('..') # to be able to import files from parent directory
-from .. import utils
+from utils import read_txt_file, strip
 
 def place_val(arr, val):
     arr.pop(0)
@@ -35,7 +35,7 @@ def find_max_cal(lines, top_n = 1):
     return top_n_values
 
 if __name__ == "__main__":
-    lines = utils.read_txt_file("input")
-    lines = list(map(utils.strip, lines))
+    lines = read_txt_file("input")
+    lines = list(map(strip, lines))
     print(f"Sum of 3 max amount of calories : {sum(find_max_cal(lines, top_n = 3))} calories")
     
