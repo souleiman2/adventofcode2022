@@ -1,3 +1,7 @@
+import sys
+sys.path.append('..') # to be able to import files from parent directory
+from .. import utils
+
 from enum import Enum
 
 class OwnShape(Enum):
@@ -69,7 +73,7 @@ def calc_score_round(line):
     return win_score + shape_score
 
 if __name__ == "__main__":
-    lines = read_txt_file("input")
-    lines = list(map(strip, lines))
+    lines = utils.read_txt_file("input")
+    lines = list(map(utils.strip, lines))
     scores = list(map(calc_score_round, lines))
     print(f"Total score : {sum(scores)}")

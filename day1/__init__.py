@@ -1,10 +1,6 @@
-
-def read_txt_file(filename):
-    f = open(filename + ".txt", "r")
-    return f.readlines()
-
-def strip(line):
-    return line.strip()
+import sys
+sys.path.append('..') # to be able to import files from parent directory
+from .. import utils
 
 def find_max_cal(lines):
     """
@@ -27,7 +23,7 @@ def find_max_cal(lines):
     return max_val
 
 if __name__ == "__main__":
-    lines = read_txt_file("input")
-    lines = list(map(strip, lines))
+    lines = utils.read_txt_file("input")
+    lines = list(map(utils.strip, lines))
     print(f"Max amount of calories : {find_max_cal(lines)} calories")
     

@@ -1,9 +1,6 @@
-def read_txt_file(filename):
-    f = open(filename + ".txt", "r")
-    return f.readlines()
-
-def strip(line):
-    return line.strip()
+import sys
+sys.path.append('..') # to be able to import files from parent directory
+from .. import utils
 
 def find_priority(letter):
     if ord("a") <= ord(letter) <= ord("z"):
@@ -37,8 +34,8 @@ def group_lines(lines, group_size = 3):
     return [lines[i*group_size:(i+1)*group_size] for i in range(len(lines)//group_size)]
 
 if __name__ == "__main__":
-    lines = read_txt_file("input")
-    lines = list(map(strip, lines))
+    lines = utils.read_txt_file("input")
+    lines = list(map(utils.strip, lines))
     grouped_lines = group_lines(lines)
     scores = list(map(calc_group_lines, grouped_lines))
     print(f"Here is the sum of all the priorities : {sum(scores)}")
