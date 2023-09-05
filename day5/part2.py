@@ -5,7 +5,7 @@ from utils import read_txt_file
 import re
 
 def transfer(stacks, nb_from, nb_to, amount):
-    stacks[nb_to] += stacks[nb_from][len(stacks[nb_from])-amount:][::-1]
+    stacks[nb_to] += stacks[nb_from][len(stacks[nb_from])-amount:]
     stacks[nb_from] = stacks[nb_from][:-amount]
 
 def exec_all_transfer(stacks, lines):
