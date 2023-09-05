@@ -7,7 +7,7 @@ def is_all_diff(substr):
 
 def find_start_pos(line):
     index = 0
-    size_substr = 4
+    size_substr = 14
     while index < len(line) - size_substr + 1:
         if is_all_diff(line[index:index+size_substr]):
             return index + size_substr
