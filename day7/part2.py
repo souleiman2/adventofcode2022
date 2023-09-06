@@ -49,6 +49,16 @@ class Folder:
             
         return current_index
 
+def find_smallest_bigger_size(current_folder, minimum_size = 8381165):
+    if current_folder.size < minimum_size:
+        return float('inf')
+
+    smallest_val = current_folder.size
+    for child in current_folder.child_dir:
+        smallest_val = min(smallest_val, find_smallest_bigger_size(child))
+    return smallest_val
+
+
 
 if __name__ == "__main__":
     lines = read_txt_file("input")
@@ -57,7 +67,7 @@ if __name__ == "__main__":
     root = Folder("/")
     root.update_size(0)
     
-    print("Answer : ", root.count_size_smaller_threshold)
+    print("Answer : ", find_smallest_bigger_size(root))
     
     
     
