@@ -33,6 +33,15 @@ class Vector:
     def __str__(self) -> str:
         return f"({self.x}, {self.y})"
 
+def move_vec_to_direction_scalar(move_vec):
+    if move_vec.y > 0:
+        return Direction.UP.value, abs(move_vec.y)
+    elif move_vec.y < 0:
+        return Direction.DOWN.value, abs(move_vec.y)
+    elif move_vec.x > 0:
+        return Direction.RIGHT.value, abs(move_vec.x)
+    return Direction.LEFT.value , abs(move_vec.x)
+
 class Direction(Enum):
     UP = Vector(0, 1)
     DOWN = Vector(0, -1)
@@ -55,79 +64,41 @@ class Knot:
         return abs(self.x - next_knot.x) <= 1 and abs(self.y - next_knot.y) <= 1
     
     def move(self, next_knot):
-        vec = Vector(0,0)
-        
-        if self.x > next_knot.x:
-            vec.x = 1
-        elif self.x < next_knot.x:
-            vec.x = -1
+        if not self.is_next_to_knot(next_knot):
+            vec = Vector(0,0)
             
-        if self.y > next_knot.y:
-            vec.y = 1
-        elif self.y < next_knot.y:
-            vec.y = -1
+            if self.x > next_knot.x:
+                vec.x = -1
+            elif self.x < next_knot.x:
+                vec.x = 1
+                
+            if self.y > next_knot.y:
+                vec.y = -1
+            elif self.y < next_knot.y:
+                vec.y = 1
             
-        
+            self.__pos += vec
+
+    def move_direction(self, direction):
+        self.__pos += direction
 
 class Rope:
-    def __init__(self, pos):
-        self.pos_tail = pos.clone()
-        self.pos_head = pos.clone()
+    def __init__(self, starting_pos, number_knot):
+        self.knots = [Knot(starting_pos) for _ in range(number_knot)]
+        self.tail_pos = {(starting_pos.x, starting_pos.y)}
     
-    def is_head_tail_touching(self):
-        return 
-    
-    def move():
-        pass
-    
-    def line_close(self, move_vec):
-        arr_visited = []
-        
-        direction = None
-        move_diag = False
-        if move_vec.x == 0:
-            if move_vec.y > 0:
-                direction = Vector(0, 1)
+    def move(self, direction):
+        for i in range(len(self.knots)):
+            if i == 0:
+                self.knots[i].move_direction(direction)
             else:
-                direction = Vector(0, -1)
-            
-            if self.pos_head.x != self.pos_tail.x:
-                move_diag = True
-            
-        else:
-            if move_vec.x > 0:
-                direction = Vector(1, 0)
-            else:
-                direction = Vector(-1, 0)
-            
-            if self.pos_head.y != self.pos_tail.y:
-                move_diag = True
+                self.knots[i].move(self.knots[i-1])
         
-        if move_diag:
-            if direction.x == 0:
-                # move vertical
-                self.pos_tail = Vector(self.pos_head.x, self.pos_tail.y) + direction
-            else:
-                #move horizontal
-                self.pos_tail = Vector(self.pos_tail.x, self.pos_head.y) + direction
-            arr_visited.append(self.pos_tail.clone())
-        
-        while not self.is_head_tail_touching():
-            self.pos_tail += direction
-            arr_visited.append(self.pos_tail.clone())
-        return arr_visited
-    
-    def move(self, move_vec):
-        # first move of head
-        self.pos_head += move_vec
-
-        new_tail_position = []
-        # movement of tail
-        if not self.is_head_tail_touching():
-            new_tail_position += self.line_close(move_vec)
-            self.pos_tail = new_tail_position[-1]
-        
-        return new_tail_position
+    def moves(self, move_vec):
+        direction, scalar = move_vec_to_direction_scalar(move_vec)
+        for _ in range(scalar):
+            self.move(direction)
+            self.tail_pos.add((self.knots[-1].x, self.knots[-1].y))
 
 def parse_command(line):
     temp = line.split(" ")
@@ -158,33 +129,19 @@ def find_start_pos_and_size(arr_moves):
             maxi_y = current_pos.y
     
     start_pos = Vector(-mini_x, -mini_y)
-    size = Vector(maxi_x - mini_x + 1, maxi_y - mini_y + 1)
-    
-    return start_pos, size
+    return start_pos
 
-def count_matrix(matrix):
-    return sum(sum(elem) for elem in matrix)
-
-def visited_pos(visited_matrix, positions):
-    for pos in positions:
-        visited_matrix[pos.y][pos.x] = True
-
-def count_position_tail(size, starting_pos, arr_moves):
-    bool_matrix = [[False for _ in range(size.x)] for _ in range(size.y)]
-    visited_pos(bool_matrix, [starting_pos])
-    
-    rope = Rope(starting_pos)
+def count_position_tail(starting_pos, arr_moves):    
+    rope = Rope(starting_pos, 10)
     for move in arr_moves:
-        tail_visited = rope.move(move)
-        visited_pos(bool_matrix, tail_visited)
+        rope.moves(move)
     
-    return count_matrix(bool_matrix)
-
+    return len(rope.tail_pos)
 
 if __name__ == "__main__":
     lines = read_txt_file("input")
     arr_moves = list(map(lambda line : parse_command(strip(line)), lines))
-    start_pos, size = find_start_pos_and_size(arr_moves)
-    answer = count_position_tail(size, start_pos, arr_moves)
+    start_pos = find_start_pos_and_size(arr_moves)
+    answer = count_position_tail(start_pos, arr_moves)
     print("Nb position the tail visited : ", answer)
     
